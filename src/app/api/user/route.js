@@ -1,38 +1,54 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
-export async function GET(req, res) {
+export async function GET() {
   const prisma = new PrismaClient();
   try {
-    const users = await prisma.user.findMany();
-    return NextResponse.json({ response: users });
+    const users = await prisma.user.findMany(); 
+    const usersData = users.map((user) => ({
+      id: Number(user.id),
+      firstName: user.firstName,
+      middleName: user.middleName,
+      lastName: user.lastName,
+      mobile: user.mobile,
+      email: user.email,
+      passwordHash: user.passwordHash,
+      registeredAt: user.registeredAt,
+      lastLoginAt: user.lastLoginAt,
+      intro: user.intro,
+      profile: user.profile,
+    }));
+
+    return NextResponse.json({ data: usersData });
   } catch (error) {
     console.error("Error fetching users:", error);
+    await prisma.$disconnect();
     return NextResponse.json({
       status: "Error",
       message: "Failed to fetch users",
+      error: error.message,
       statusCode: 500,
     });
   }
-
 }
 
 export async function POST(req, res) {
   const prisma = new PrismaClient();
 
   try {
+    const reqBody = await req.json();
     await prisma.user.create({
       data: {
-        firstName: "Demo User",
-        middleName: "Demo Meta Title",
-        lastName: "Demo Meta Title",
-        mobile: "01628499",
-        email: "user2@yopmail.com",
-        passwordHash: "user",
+        firstName: reqBody.firstName,
+        middleName: reqBody.middleName,
+        lastName: reqBody.lastName,
+        mobile: reqBody.mobile,
+        email: reqBody.email,
+        passwordHash: reqBody.passwordHash,
         registeredAt: new Date(),
         lastLoginAt: new Date(),
-        intro: "user",
-        profile: "user",
+        intro: reqBody.intro,
+        profile: reqBody.profile
       }
     });
     return NextResponse.json({status: "Success", message: "Successfully User Created",statusCode: 200});
@@ -47,24 +63,34 @@ export async function PUT(req, res) {
   const prisma = new PrismaClient();
 
   try {
+    const reqBody = await req.json();
     await prisma.user.update({
-      where:{email:"user@yopmail.com"},
+      where:{email: reqBody.email},
       data: {
-        firstName: "First Name",
-        middleName: "Middle Name",
-        lastName: "Last Name",
-        mobile: "01628499",
-        email: "user@yopmail.com",
-        passwordHash: "user",
+        firstName: reqBody.firstName,
+        middleName: reqBody.middleName,
+        lastName: reqBody.lastName,
+        mobile: reqBody.mobile,
+        email: reqBody.email,
+        passwordHash: reqBody.passwordHash,
         registeredAt: new Date(),
         lastLoginAt: new Date(),
-        intro: "demo user",
-        profile: "user",
+        intro: reqBody.intro,
+        profile: reqBody.profile
       }
     });
-    return NextResponse.json({status: "Success", message: "Successfully User Updated",statusCode: 200});
+    return NextResponse.json({
+      status: "Success", 
+      message: "Successfully User Updated",
+      statusCode: 200
+    });
   } catch (error) { 
-    return NextResponse.json({ status: "Error", message: "Failed to update a new user", statusCode: 500});
+    return NextResponse.json({
+      status: "Error",
+      message: "Failed to update a new user", 
+      statusCode: 500,
+      error: error.message
+    });
   } finally {
     await prisma.$disconnect();
   }
