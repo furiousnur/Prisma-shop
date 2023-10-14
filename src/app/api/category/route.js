@@ -69,8 +69,13 @@ export async function PUT(req, res) {
       }
     });
     return NextResponse.json({status: "Success", message: "Successfully Category Updated",statusCode: 200});
-  } catch (error) { 
-    return NextResponse.json({ status: "Error", message: "Failed to update a new category", statusCode: 500});
+  } catch (error) {
+    return NextResponse.json({
+      status: "Error",
+      message: "Failed to update a new Category",
+      statusCode: 500,
+      error: error.message,
+    });
   } finally {
     await prisma.$disconnect();
   }
