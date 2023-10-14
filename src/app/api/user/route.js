@@ -98,10 +98,10 @@ export async function PUT(req, res) {
 
 export async function DELETE(req, res) {
   const prisma = new PrismaClient();
-
+  const reqBody = await req.json();
   try {
     await prisma.user.delete({
-      where:{email:"user@yopmail.com"}
+      where:{email: reqBody.email}
     });
     return NextResponse.json({status: "Success", message: "Successfully User Deleted",statusCode: 200});
   } catch (error) { 
