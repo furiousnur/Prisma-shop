@@ -21,8 +21,7 @@ export async function GET() {
     }));
 
     return NextResponse.json({ data: postData });
-  } catch (error) {
-    console.error("Error fetching post:", error);
+  } catch (error) { 
     await prisma.$disconnect();
     return NextResponse.json({
       status: "Error",
