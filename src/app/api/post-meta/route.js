@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 export async function GET() {
   const prisma = new PrismaClient();
   try {
-    const post_meta = await prisma.post_meta.findMany(); 
+    const post_meta = await prisma.post_Meta.findMany(); 
     const postmetaData = post_meta.map((post_meta) => ({
       id: Number(post_meta.id),
       postId: Number(post_meta.postId),
@@ -29,10 +29,10 @@ export async function POST(req, res) {
   const prisma = new PrismaClient();
   try {
     const reqBody = await req.json();
-    await prisma.post_meta.create({
+    await prisma.post_Meta.create({
       data: {
         postId: reqBody.postId,
-        key: reqBody.key, 
+        Key: reqBody.key, 
         content: reqBody.content,
       }
     }); 
@@ -54,11 +54,11 @@ export async function PUT(req, res) {
 
   try {
     const reqBody = await req.json();
-    await prisma.post_meta.update({
+    await prisma.post_Meta.update({
       where:{id:reqBody.id},
       data: {
         postId: reqBody.postId,
-        key: reqBody.key,
+        Key: reqBody.key,
         content: reqBody.content,
       }
     });
@@ -79,7 +79,7 @@ export async function DELETE(req, res) {
   const prisma = new PrismaClient();
   const reqBody = await req.json();
   try {
-    await prisma.post_meta.delete({
+    await prisma.post_Meta.delete({
       where:{id:reqBody.id}
     });
     return NextResponse.json({status: "Success", message: "Successfully Post Meta Deleted",statusCode: 200});
