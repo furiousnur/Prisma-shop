@@ -4,23 +4,20 @@ import { PrismaClient } from "@prisma/client";
 export async function GET() {
   const prisma = new PrismaClient();
   try {
-    const categories = await prisma.categories.findMany(); 
-    const categoryData = categories.map((category) => ({
-      id: Number(category.id),
-      parentId: Number(category.parentId),
-      title: category.title,
-      metaTitle: category.metaTitle,
-      slug: category.slug,
-      content: category.content
+    const postTags = await prisma.post_Tag.findMany(); 
+    const postTagData = postTags.map((post_tag) => ({
+      id: Number(post_tag.id),
+      postId: Number(post_tag.postId),
+      tagId: Number(post_tag.tagId)
     }));
 
-    return NextResponse.json({ data: categoryData });
+    return NextResponse.json({ data: postTagData });
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    console.error("Error fetching post tag:", error);
     await prisma.$disconnect();
     return NextResponse.json({
       status: "Error",
-      message: "Failed to fetch categories",
+      message: "Failed to fetch post tag",
       error: error.message,
       statusCode: 500,
     });
@@ -31,20 +28,17 @@ export async function POST(req, res) {
   const prisma = new PrismaClient();
   try {
     const reqBody = await req.json();
-    await prisma.categories.create({
+    await prisma.post_Tag.create({
       data: {
-        parentId: reqBody.parentId,
-        title: reqBody.title,
-        metaTitle: reqBody.metaTitle,
-        slug: reqBody.slug,
-        content: reqBody.content,
+        postId: reqBody.postId,
+        tagId: reqBody.tagId, 
       }
     }); 
-    return NextResponse.json({status: "Success", message: "Successfully Category Created",statusCode: 200});
+    return NextResponse.json({status: "Success", message: "Successfully Post Tag Created",statusCode: 200});
   } catch (error) { 
     return NextResponse.json({ 
       status: "Error", 
-      message: "Failed to create a new Category", 
+      message: "Failed to create a new Post Tag", 
       statusCode: 500,
       error: error.message,
     });
@@ -58,21 +52,18 @@ export async function PUT(req, res) {
 
   try {
     const reqBody = await req.json();
-    await prisma.categories.update({
-      where:{id:reqBody.id},
+    await prisma.post_Tag.update({
+      where:{id:reqBody.postId},
       data: {
-        parentId: reqBody.parentId,
-        title: reqBody.title,
-        metaTitle: reqBody.metaTitle,
-        slug: reqBody.slug,
-        content: reqBody.content,
+        postId: reqBody.postId,
+        tagId: reqBody.tagId,
       }
     });
-    return NextResponse.json({status: "Success", message: "Successfully Category Updated",statusCode: 200});
+    return NextResponse.json({status: "Success", message: "Successfully Post Tag Updated",statusCode: 200});
   } catch (error) {
     return NextResponse.json({
       status: "Error",
-      message: "Failed to update a new Category",
+      message: "Failed to update a new Post Tag",
       statusCode: 500,
       error: error.message,
     });
@@ -85,12 +76,12 @@ export async function DELETE(req, res) {
   const prisma = new PrismaClient();
   const reqBody = await req.json();
   try {
-    await prisma.categories.delete({
+    await prisma.post_Tag.delete({
       where:{id:reqBody.id}
     });
-    return NextResponse.json({status: "Success", message: "Successfully Category Deleted",statusCode: 200});
+    return NextResponse.json({status: "Success", message: "Successfully Post Tag Deleted",statusCode: 200});
   } catch (error) { 
-    return NextResponse.json({ status: "Error", message: "Failed to delete a new category", statusCode: 500});
+    return NextResponse.json({ status: "Error", message: "Failed to delete a new post tag", statusCode: 500});
   } finally {
     await prisma.$disconnect();
   }
